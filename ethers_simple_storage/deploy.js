@@ -10,7 +10,15 @@ async function main() {
   // http://localhost:8545 - ganache endpoint on local machine
   // can do using axios - ethers.js has built in support for this - wrapper around all the web3 providers
   const provider = new ethers.JsonRpcProvider(process.env.RPC_URL);
-  const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
+  //   const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
+
+  // Using encryptedKey to generate wallet
+  const encryptedJsonKey = fs.readFileSync('./.encryptedKey.json', 'utf8');
+  let wallet = ethers.Wallet.fromEncryptedJsonSync(
+    encryptedJsonKey,
+    process.env.PRIVATE_KEY_PASSWORD
+  );
+  wallet = await wallet.connect(provider);
   //   console.log(`Process Env PrivateKey: ${process.env.PRIVATE_KEY}`);
 
   const abi = fs.readFileSync('./SimpleStorage_sol_SimpleStorage.abi', 'utf8');

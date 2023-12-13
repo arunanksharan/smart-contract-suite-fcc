@@ -1,6 +1,9 @@
 # Dependency directories in any subdirectory
 **/node_modules/
 
+# EncryptedKey
+**/*.encryptedKey.json
+
 # Solidity build artifacts
 build/
 artifacts/
