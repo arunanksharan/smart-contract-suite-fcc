@@ -19,6 +19,10 @@ artifacts/
 cache/
 build/contracts/
 
+# Typechain
+**/typechain
+**/typechain-types/
+
 # Environment files in any subdirectory
 **/*.env
 **/*.env.local
