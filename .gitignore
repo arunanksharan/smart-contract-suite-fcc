@@ -4,6 +4,13 @@
 # EncryptedKey
 **/*.encryptedKey.json
 
+# Gas Reporter
+**/gas-report.txt
+
+# Solidity coverage
+**/coverage.json
+**/coverage/
+
 # Solidity build artifacts
 build/
 artifacts/
