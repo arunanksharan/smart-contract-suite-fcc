@@ -1,8 +1,6 @@
-const ethers = require("ethers")
-// import { ethers } from 'ethers';
-// import { fs } from 'fs';
-const fs = require("fs")
-require("dotenv").config()
+import { ethers } from "ethers"
+import * as fs from "fs-extra"
+import "dotenv/config"
 
 async function main() {
   // option 1: Compile contracts within code
@@ -10,7 +8,7 @@ async function main() {
   // http://localhost:8545 - ganache endpoint on local machine
   // can do using axios - ethers.js has built in support for this - wrapper around all the web3 providers
   const provider = new ethers.JsonRpcProvider(process.env.RPC_URL)
-  const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider)
+  const wallet = new ethers.Wallet(process.env.PRIVATE_KEY!, provider)
 
   // Deployed address on Goerli: 0x8F86060Dc5CbddDEf86887ECAA433abE043Bd34e - Confirmed with Etherscan
 
@@ -28,13 +26,22 @@ async function main() {
     "./SimpleStorage_sol_SimpleStorage.bin",
     "utf8",
   )
+
+  // Cast the contract to the interface
+  //   const myContract = contract.connect(wallet) as ethers.Contract &
+  //     MyContractInterface
+
+  // Now you can call retrieve and other functions
+  //   const currentFavoriteNumber = await myContract.retrieve()
+  //   const updatedFavoriteNumber = await myContract.retrieve()
+
   const contractFactory = new ethers.ContractFactory(abi, binary, wallet)
   console.log("Deploying contract...")
-  const contract = await contractFactory.deploy()
-  console.log("Deployed contract to address:", contract.address)
+  const contract = (await contractFactory.deploy()) as any
+  console.log("Deployed contract to address:", contract.getAddress())
   console.log(contract)
 
-  const transactionReceipt = await contract.deploymentTransaction().wait(1)
+  const transactionReceipt = await contract.deploymentTransaction()?.wait(1)
   console.log("Here is the deployment transaction: ")
   console.log(contract.deploymentTransaction())
 
