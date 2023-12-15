@@ -1,0 +1,41 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.0;\n\ninterface AggregatorV3Interface {\n  function decimals() external view returns (uint8);\n\n  function description() external view returns (string memory);\n\n  function version() external view returns (uint256);\n\n  function getRoundData(\n    uint80 _roundId\n  ) external view returns (uint80 roundId, int256 answer, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound);\n\n  function latestRoundData()\n    external\n    view\n    returns (uint80 roundId, int256 answer, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound);\n}\n"
+    },
+    "contracts/FundMe.sol": {
+      "content": "// Get Funds from users\n// Withdraw funds\n// Set a minimum funding value in USD\n\n// SPDX-License-Identifier: LGPL-3.0-only\npragma solidity 0.8.8;\n\nimport \"./PriceConverter.sol\";\n\n// Allows people to fund collective good - any blokcchain native token into this contract\n// Deploy to testnet\n// Chainlink price feeds\n// Set a minimum funding value in USD\n\n// transaction has\n// nonce, gas price, gas limit, data, value, v,r,s, to\n\n// original - tx cost - 771495 | exec cost - 670325\n// with constant - 751569 | 650427\n// with immutable -\n\n// From solidity ^0.8.4 => use a separate error function and call this\n// error NotOwner();\n\ncontract FundMe {\n    using PriceConverter for uint256;\n\n    uint256 public constant MINIMUM_USD = 50 * 1e18; //\n    // calling this without constant - 2402\n    // calling this with constant - 303\n    address[] public funders;\n    mapping(address => uint256) public addressToAmountFunded;\n\n    // Deployer becomes the owner + Modifier - onlyOwner\n    address public immutable owner;\n\n    // without immutable - 751569 | 650427 | 2552\n    // with - overall - 728393 | 627917 | 417\n\n    AggregatorV3Interface public priceFeed;\n\n    constructor(address priceFeedAddress) {\n        owner = msg.sender;\n        priceFeed = AggregatorV3Interface(priceFeedAddress);\n    }\n\n    function fund() public payable {\n        // Want to be able to set a minimum fund amount in USD\n        // 1. How do we send ETH to this\n        require(\n            msg.value.getConversionRate(priceFeed) >= MINIMUM_USD,\n            \"Did not send enough\"\n        );\n        // require(getConversionRate(msg.value) >= minimumUsd, \"Did not send enough\");  // 1e18 == 1 * 10 ** 18 == 1 eth\n        funders.push(msg.sender);\n        addressToAmountFunded[msg.sender] += msg.value;\n    }\n\n    function withdraw() public onlyOwner {\n        /* starting index, ending index as condition, step amount*/\n        // reset the balance of all funder addresses to 0 in mapping\n        // withdraw funds\n        // require(msg.sender == owner, \"Sender is not owner\");   // converting this to modifier\n        for (\n            uint256 funderIndex = 0;\n            funderIndex < funders.length;\n            funderIndex++\n        ) {\n            address funder = funders[funderIndex];\n            addressToAmountFunded[funder] = 0;\n        }\n\n        // reset the array\n        funders = new address[](0);\n        // Methods to send money from contract - transfer, send, call\n        // transfer - convert msg.sender into payable address type | if fails, throws error and reverts\n        // payable(msg.sender).transfer(address(this).balance);\n\n        // send - if fails, returns a boolean\n        // bool sendSuccess = payable(msg.sender).send(address(this).balance);\n        // require(sendSuccess, \"Send Failed\");\n\n        // call - lower level command - call virtually any function without knowing ABI |\n        // Recommended way to send & receive ethereum and blockchain native token\n        (bool callSuccess, ) = payable(msg.sender).call{\n            value: address(this).balance\n        }(\"\");\n        require(callSuccess, \"Call Failed\");\n    }\n\n    receive() external payable {\n        fund();\n    }\n\n    fallback() external payable {\n        fund();\n    }\n\n    modifier onlyOwner() {\n        require(msg.sender == owner, \"Sender is not owner\");\n        // if (msg.sender != owner) {revert NotOwner();};  // saves a lot of gas\n        _;\n    }\n}\n"
+    },
+    "contracts/PriceConverter.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity 0.8.8;\n\nimport \"@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol\";\n\nlibrary PriceConverter {\n    function getprice(\n        AggregatorV3Interface priceFeed\n    ) internal view returns (uint256) {\n        // Interacting with a contract outside this project\n        // Need address of contract and ABI\n        // Goerli - Eth / USD - 0xD4a33860578De61DBAbDc8BFdb98FD742fA7028e\n        // (uint80 roundId, int256 price, uint startedAt, uint timeStamp, uint80 answeredInRound) = priceFeed.latestRoundData();\n        // price here is Eth in terms of USD has 8 decimal places - 3000.00000000\n        // Eth in terms of  wei has 18 decimal places => both need to match up\n        // Multiple Eth / USD by 1 * 10 ** 10 to make it have 18 decimal places\n\n        // AggregatorV3Interface priceFeed = AggregatorV3Interface(\n        //     0xD4a33860578De61DBAbDc8BFdb98FD742fA7028e\n        // );\n        (, int256 price, , , ) = priceFeed.latestRoundData();\n        return uint256(price * 1e10); // 1 * 10 ** 10\n    }\n\n    function getVersion() internal view returns (uint256) {\n        AggregatorV3Interface priceFeed = AggregatorV3Interface(\n            0xD4a33860578De61DBAbDc8BFdb98FD742fA7028e\n        );\n        return priceFeed.version();\n    }\n\n    function getConversionRate(\n        uint256 ethAmount,\n        AggregatorV3Interface priceFeed\n    ) internal view returns (uint256) {\n        uint256 ethPrice = getprice(priceFeed);\n        uint256 ethAmountInUsd = (ethPrice * ethAmount) / 1e18;\n        return ethAmountInUsd;\n    }\n}\n"
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": false,
+      "runs": 200
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "evm.methodIdentifiers",
+          "metadata",
+          "devdoc",
+          "userdoc",
+          "storageLayout",
+          "evm.gasEstimates"
+        ],
+        "": [
+          "ast"
+        ]
+      }
+    },
+    "metadata": {
+      "useLiteralContent": true
+    }
+  }
+}
