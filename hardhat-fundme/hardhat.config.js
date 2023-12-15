@@ -1,6 +1,7 @@
 const { version } = require("os")
 
 require("@nomicfoundation/hardhat-toolbox")
+require("@nomiclabs/hardhat-ethers")
 require("dotenv").config()
 require("hardhat-deploy")
 require("@nomicfoundation/hardhat-verify")
