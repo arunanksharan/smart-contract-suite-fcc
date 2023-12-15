@@ -18,7 +18,7 @@ module.exports = {
     defaultNetwork: "hardhat",
     networks: {
         hardhat: {
-            chainId: 31337,
+            chainId: 1337,
         },
         goerli: {
             url: GOERLI_RPC_URL,
@@ -50,5 +50,8 @@ module.exports = {
             default: 0,
             1: 0,
         },
+    },
+    mocha: {
+        timeout: 500000,
     },
 }
