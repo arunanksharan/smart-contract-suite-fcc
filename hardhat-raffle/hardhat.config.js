@@ -17,6 +17,8 @@ const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY || "Your etherscan API k
 const REPORT_GAS = process.env.REPORT_GAS || false
 const GOERLI_RPC_URL = process.env.GOERLI_RPC_URL
 const COINMARKETCAP_API_KEY = process.env.COINMARKETCAP_API_KEY
+const ALCHEMY_SEPOLIA_RPC_URL = process.env.ALCHEMY_SEPOLIA_RPC_URL
+const ALCHEMY_SEPOLIA_API_KEY = process.env.ALCHEMY_SEPOLIA_API_KEY
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
@@ -35,11 +37,18 @@ module.exports = {
             chainId: 5,
             blockConfirmations: 2,
         },
+        sepolia: {
+            url: ALCHEMY_SEPOLIA_RPC_URL,
+            accounts: [PRIVATE_KEY],
+            chainId: 11155111,
+            blockConfirmations: 2,
+        },
     },
     etherscan: {
         // yarn hardhat verify --network <NETWORK> <CONTRACT_ADDRESS> <CONSTRUCTOR_PARAMETERS>
         apiKey: {
             goerli: ETHERSCAN_API_KEY,
+            sepolia: ETHERSCAN_API_KEY,
         },
         customChains: [
             {
@@ -83,6 +92,6 @@ module.exports = {
         ],
     },
     mocha: {
-        timeout: 500000, // 500 seconds max for running tests
+        timeout: 200000, // 500 seconds max for running tests
     },
 }

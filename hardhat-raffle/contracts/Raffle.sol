@@ -62,7 +62,7 @@ contract Raffle is VRFConsumerBaseV2, AutomationCompatible {
     /* Events */
     event Raffle__Enter(address indexed player);
     event RequestedRaffleWinner(uint256 indexed requestId);
-    event Raffle__Winner(address indexed winner);
+    event WinnerPicked(address indexed winner);
 
     /* Constructor */
     constructor(
@@ -151,7 +151,7 @@ contract Raffle is VRFConsumerBaseV2, AutomationCompatible {
             revert Raffle__WinnerTransferFailed();
         }
         s_previousWinners.push(recentWinner);
-        emit Raffle__Winner(recentWinner);
+        emit WinnerPicked(recentWinner);
     }
 
     // - Users can enter into the Raffle using a small amount - via enter function

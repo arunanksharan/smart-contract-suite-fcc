@@ -73,6 +73,7 @@ module.exports = async (hre) => {
     console.log(
         `Waiting for block confirmations... of ${network.config.blockConfirmations || 1} blocks`,
     )
+    console.log("Raffle contract adddress:", raffle.address)
     // In latest version of Chainlink/contracts 0.6.1 or after 0.4.1, we need to add consumer explicitly after deployment of contract
     if (developmentChains.includes(network.name)) {
         await vrfCoordinatorV2Mock.addConsumer(subscriptionId, raffle.address)
@@ -80,7 +81,7 @@ module.exports = async (hre) => {
     }
     if (!developmentChains.includes(network.name) && process.env.ETHERSCAN_API_KEY) {
         log("Verifying on Etherscan....")
-        await verify(fundMe.address, args)
+        await verify(raffle.address, args)
     }
     log("-------------------------------------")
 }
