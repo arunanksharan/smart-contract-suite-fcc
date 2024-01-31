@@ -19,7 +19,13 @@
     - ERC20 - address => amount || ERC721 - tokenID => ownerAddress || ERC1155 - tokenClassId => ownerAddress => amount
     - 0xabcd => 20 coins        || Kitty #1 => 0xabcd               || Swords => 0xabcd => 20 | Shields => 0xefgh => 30
 * Composables: ERC998 Standard
-    - 
+    - provide a template by which NFTs can own both non-fungible and fungible assets.
+* Metadata provides descriptive information for a specific token ID. In the case of the CryptoKittty, the metadata is the name of the cat, the picture of the cat, a description, and any additional traits (called “cattributes”, in the case of CryptoKitties). 
+```{
+  "name": "Duke Khanplum",
+  "image": "https://storage.googleapis.com/ck-kitty-image/0x06012c8cf97bead5deae237070f9587f8e7a266d/1500718.png",
+  "description": "Heya. My name is Duke Khanplum, but I've always believed I'm King Henry VIII reincarnated."
+}```
 
 
 
