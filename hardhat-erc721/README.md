@@ -29,5 +29,17 @@
 }
 ```
 
+* Onchain Metadata
+    - The benefits of representing metadata on-chain are - it permanently resides with the token, persisting beyond the lifecycle of any given application, and it can change in accordance with on-chain logic.
+* Off-chain Metadata
+    - Most projects store their metadata off-chain due to the current storage limitations of the Ethereum blockchain. 
+    - The ERC721 standard, therefore, includes a method called tokenURI that developers can implement to tell applications where to find the metadata for a given item
+```
+function tokenURI(uint256 _tokenId) public view returns (string)
+```
+
+
+
+
 
 
