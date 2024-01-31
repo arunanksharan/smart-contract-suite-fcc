@@ -34,9 +34,20 @@
 * Off-chain Metadata
     - Most projects store their metadata off-chain due to the current storage limitations of the Ethereum blockchain. 
     - The ERC721 standard, therefore, includes a method called tokenURI that developers can implement to tell applications where to find the metadata for a given item
+    - The tokenURI method returns a public URL. This, in turn, returns a JSON dictionary of data, something like the example dictionary for the CryptoKitty above
+    - This metadata should conform to the official ERC721 metadata standard for it to be picked up by applications like OpenSea.
+
 ```
 function tokenURI(uint256 _tokenId) public view returns (string)
 ```
+
+* Off-chain storage solutions
+    - Centralized servers - Simplest way  - centralized server somewhere, or a cloud storage solution like AWS
+        - Disadvantages: 1) the developer can change the metadata at will, 2) if the project goes offline, the metadata could disappear from its original source.
+    - IPFS
+        - IPFS is a peer-to-peer file storage system that allows content to be hosted across computers, such that the file is replicated in many different locations. This ensures that A) the metadata is immutable, as it is uniquely addressed by the hash of the file, and B) as long as there are nodes willing to host the data, the data will persist over time.
+
+
 
 
 
